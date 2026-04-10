@@ -54,16 +54,16 @@ This system bypasses simple keyword matching by relying entirely on dense vector
 
 First, install PyTorch configured for your specific CUDA version (Example for CUDA 12.9):
 
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu129
+`pip install torch torchvision --index-url https://download.pytorch.org/whl/cu129`
 
 Then, install the remaining pipeline dependencies:
 
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 ### 2. Building the Index (Data Ingestion)
 Place your `.mp4` files into `data/raw_videos/`. Then, run the build command to chunk the videos, embed the frames, and save the Faiss index to disk:
 
-python main.py --build
+`python main.py --build`
 
 ### 3. Running the Search Engine
 You can interact with the search engine using either the web interface or the terminal. Both interfaces will automatically load the saved Faiss index from disk without re-embedding the videos.
@@ -71,12 +71,12 @@ You can interact with the search engine using either the web interface or the te
 **Option A: Web UI**
 Launch the Streamlit web interface for a rich, visual search experience with interactive video playback:
 
-streamlit run app.py
+`streamlit run app.py`
 
 **Option B: Command Line Interface (CLI)**
 Run the search engine directly in your terminal for fast, text-based interactive querying:
 
-python main.py --query
+`python main.py --query`
 
 ---
 
