@@ -28,22 +28,22 @@ This system bypasses simple keyword matching by relying entirely on dense vector
 
 ## 📂 Repository Structure
 
-multimodal-video-search/
-├── data/
-│   ├── raw_videos/                 # Place raw .mp4 files here
-│   ├── processed_frames/           # Auto-generated visual chunks
-│   │   └── metadata.json           # Auto-generated chunk-to-video relationship mapping
-│   ├── faiss_index.bin             # Auto-generated disk-backed vector store
-│   └── faiss_index.bin.map.json    # Auto-generated persistent ID-to-chunk Faiss mapping
-├── src/
-│   ├── video_processor.py          # Video chunking & frame extraction
-│   ├── embedder.py                 # SigLIP tensor processing
-│   ├── vector_store.py             # Faiss indexing & persistence
-│   └── reranker.py                 # Qwen2-VL logit extraction
-├── main.py                         # CLI Orchestrator (Build/Search)
-├── app.py                          # Streamlit Web UI
-├── requirements.txt
-└── README.md
+    multimodal-video-search/
+    ├── data/
+    │   ├── raw_videos/                 # Place raw .mp4 files here
+    │   ├── processed_frames/           # Auto-generated visual chunks
+    │   │   └── metadata.json           # Auto-generated chunk-to-video relationship mapping
+    │   ├── faiss_index.bin             # Auto-generated disk-backed vector store
+    │   └── faiss_index.bin.map.json    # Auto-generated persistent ID-to-chunk Faiss mapping
+    ├── src/
+    │   ├── video_processor.py          # Video chunking & frame extraction
+    │   ├── embedder.py                 # SigLIP tensor processing
+    │   ├── vector_store.py             # Faiss indexing & persistence
+    │   └── reranker.py                 # Qwen2-VL logit extraction
+    ├── main.py                         # CLI Orchestrator (Build/Search)
+    ├── app.py                          # Streamlit Web UI
+    ├── requirements.txt
+    └── README.md
 
 ---
 
