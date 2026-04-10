@@ -1,0 +1,53 @@
+# ==========================================
+# Project-Specific Data & Artifacts
+# ==========================================
+# Ignore all raw videos but keep the folder structure
+data/raw_videos/*
+!data/raw_videos/.gitkeep
+
+# Ignore generated frames and metadata but keep the folder structure
+data/processed_frames/*
+!data/processed_frames/.gitkeep
+
+# Ignore the heavy Faiss index and mapping files
+data/faiss_index.bin
+data/faiss_index.bin.map.json
+
+# ==========================================
+# Python & Environments
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+.conda/
+
+# Environment Variables
+.env
+.env.local
+
+# ==========================================
+# AI/ML Specifics
+# ==========================================
+# Ignore locally downloaded weights
+*.pt
+*.pth
+*.safetensors
+*.ckpt
+*.h5
+.huggingface/
+.cache/
+
+# ==========================================
+# IDEs & OS Files
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
