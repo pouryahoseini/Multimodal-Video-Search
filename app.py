@@ -6,7 +6,19 @@ os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
 
 import streamlit as st
-from main import load_search_models, run_search
+from main import load_search_models, run_search, export_search_to_webp
+
+# Configs
+raw_videos_dir = "./data/raw_videos"
+video_file_extension = "mp4"
+output_webp_size = (270, 480)  # Size for the exported WebP animations
+webp_save_dir = "./assets"
+processed_frames_dir = "./data/processed_frames"
+faiss_index_path = "./data/faiss_index.bin"
+# Number of top results to return from the search
+top_k = 5
+# Weight of the original visual retrieval score in the final fusion (0.0 = only VLM score, 1.0 = only original score)
+reranking_fusion_alpha = 0.3 
 
 # Page Config
 st.set_page_config(page_title="Semantic Video Search Engine", layout="wide")
@@ -26,17 +38,15 @@ st.markdown(
 )
 
 # Check if the necessary data files exist before proceeding
-if not os.path.exists("./data/processed_frames") or not os.path.exists("./data/faiss_index.bin"):
+if not os.path.exists(processed_frames_dir) or not os.path.exists(faiss_index_path):
     st.error("Processed frames or Faiss index not found. Please run \"python main.py --build\" first.")
     st.stop()
 
 # Cache the heavy models so they only load once
 @st.cache_resource
-def load_backend():
-    frames_dir = "./data/processed_frames"
-    index_path = "./data/faiss_index.bin"
-    embedder, vector_store, reranker = load_search_models(frames_dir=frames_dir, 
-                                                          index_path=index_path,
+def load_backend(processed_frames_dir, faiss_index_path):
+    embedder, vector_store, reranker = load_search_models(frames_dir=processed_frames_dir, 
+                                                          index_path=faiss_index_path,
                                                           fps=1.0,
                                                           embedding_model_name="google/siglip-base-patch16-224",
                                                           vlm_model_name="Qwen/Qwen2-VL-7B-Instruct"
@@ -45,7 +55,7 @@ def load_backend():
     return embedder, vector_store, reranker
 
 with st.spinner("Loading AI Models..."):
-    embedder, vector_store, reranker = load_backend()
+    embedder, vector_store, reranker = load_backend(processed_frames_dir, faiss_index_path)
 
 # The UI
 with st.form("search_form"):
@@ -64,50 +74,73 @@ st.iframe(
     """
 )
 
+# Run search and get results
 if submitted and query:
     with st.spinner("Searching..."):
-        # Run search and get results
-        results = run_search(
+        st.session_state['search_results'] = run_search(
             query=query, 
             embedder=embedder, 
             vector_store=vector_store, 
             reranker=reranker, 
-            frames_dir="./data/processed_frames", 
-            top_k=5,
-            reranking_fusion_alpha=0.3
+            frames_dir=processed_frames_dir, 
+            top_k=top_k,
+            reranking_fusion_alpha=reranking_fusion_alpha
         )
+        st.session_state['search_query'] = query
+
+if 'search_results' in st.session_state:
+    results = st.session_state['search_results']
+    search_query = st.session_state['search_query']
+    
+    st.success(f"Found {len(results)} matches!")
+    
+    # Render the results dynamically with columns
+    for rank, res in enumerate(results):
+        st.markdown(f"### Rank {rank + 1} | Confidence: {res['final_fused_score']:.3f}")
         
-        st.success(f"Found {len(results)} matches!")
+        # Create three columns. The [3, 2, 5] ratio means the left text column gets 30% of the space, 
+        # and the middle video column gets 20%. The last column is just a spacer to push the video to the left.
+        col1, col2, col3 = st.columns([3, 2, 5])
         
-        # Render the results dynamically with columns
-        for rank, res in enumerate(results):
-            st.markdown(f"### Rank {rank + 1} | Confidence: {res['final_fused_score']:.3f}")
+        # Put the text metadata in the left column
+        with col1:
+            st.markdown(f"**File:** `{res['video_id']}.mp4`")
+            st.markdown(f"**Time:** `{res['start_sec']}s - {res['end_sec']}s`")
+            st.caption(f"Visual Retrieval Score: {res['norm_stage1_score']:.2f}")
+            st.caption(f"VLM Rerank Score: {res['vlm_yes_prob']:.2f}")
             
-            # Create three columns. The [3, 2, 5] ratio means the left text column gets 30% of the space, 
-            # and the middle video column gets 20%. The last column is just a spacer to push the video to the left.
-            col1, col2, _ = st.columns([3, 2, 5])
-            
-            # Put the text metadata in the left column
-            with col1:
-                st.markdown(f"**File:** `{res['video_id']}.mp4`")
-                st.markdown(f"**Time:** `{res['start_sec']}s - {res['end_sec']}s`")
-                st.caption(f"Visual Retrieval Score: {res['norm_stage1_score']:.2f}")
-                st.caption(f"VLM Rerank Score: {res['vlm_yes_prob']:.2f}")
+        # Put the video in the middle column
+        with col2:
+            video_file = os.path.join(raw_videos_dir, f"{res['video_id']}.{video_file_extension}")
+            if os.path.exists(video_file):
+                # Safely handle sub-second rounding collisions
+                start_t = int(res['start_sec'])
+                end_t = int(res['end_sec'])
+                if end_t <= start_t:
+                    end_t = start_t + 1
                 
-            # Put the video in the middle column
-            with col2:
-                video_file = os.path.join("./data/raw_videos", f"{res['video_id']}.mp4")
-                if os.path.exists(video_file):
-                    # Safely handle sub-second rounding collisions
-                    start_t = int(res['start_sec'])
-                    end_t = int(res['end_sec'])
-                    if end_t <= start_t:
-                        end_t = start_t + 1
+                # Show the video clip for this result
+                st.video(video_file, start_time=start_t, end_time=end_t)
+            else:
+                st.error("Original video file not found on disk.")
+
+        # Put the WebP export checkbox in the third column
+        with col3:
+            export_cb = st.checkbox("Export to WebP", key=f"webp_export_{res['video_id']}_{res['chunk_id']}")
+            if export_cb:
+                os.makedirs(webp_save_dir, exist_ok=True)
+                output_path = os.path.join(webp_save_dir, f"{search_query.replace(' ', '_')}_rank{rank+1}.webp")
+                with st.spinner("Generating WebP..."):
+                    export_search_to_webp(
+                        result=res, 
+                        output_path=output_path, 
+                        output_size=output_webp_size, 
+                        video_extension=video_file_extension, 
+                        raw_videos_dir=raw_videos_dir
+                    )
                     
-                    # Show the video clip for this result
-                    st.video(video_file, start_time=start_t, end_time=end_t)
-                else:
-                    st.error("Original video file not found on disk.")
-            
-            # Add a divider after each result
-            st.divider() 
+                # Show a success message with the output path
+                st.success(f"Saved to {output_path}")
+        
+        # Add a divider after each result
+        st.divider() 

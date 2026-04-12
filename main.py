@@ -1,6 +1,8 @@
 import os
 import argparse
 import time
+import cv2
+from PIL import Image
 from src.video_processor import VideoProcessor
 from src.embedder import MultimodalEmbedder
 from src.vector_store import VectorStore
@@ -144,15 +146,59 @@ def run_search(query: str, embedder: MultimodalEmbedder, vector_store: VectorSto
 
     return final_results[:top_k]
 
+def export_search_to_webp(result: dict, output_path: str, output_size: tuple = (270, 480), 
+                          video_extension: str = "mp4", raw_videos_dir: str = "./data/raw_videos"):
+    """Exports a search result video as a lightweight WebP animation.
+
+    Args:
+        result (dict): The search result to export.
+        output_path (str): The file path to save the resulting WebP animation.
+        output_size (tuple): The size of the output WebP animation (width, height). Defaults to (270, 480).
+        video_extension (str): The video file extension. Defaults to "mp4".
+        raw_videos_dir (str): Directory containing raw videos. Defaults to "./data/raw_videos".
+    """
+
+    # Ensure the output directory exists
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    # Construct the path to the original video file
+    video_path = os.path.join(raw_videos_dir, f"{result['video_id']}.{video_extension}")
+    
+    # Extract the exact chunk using OpenCV
+    # Seek to the start time of the chunk
+    cap = cv2.VideoCapture(video_path)
+    cap.set(cv2.CAP_PROP_POS_MSEC, result['start_sec'] * 1000)
+    
+    # Read frames until we hit the end of the chunk
+    frames = []
+    while cap.isOpened() and cap.get(cv2.CAP_PROP_POS_MSEC) <= result['end_sec'] * 1000:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        
+        # Convert BGR to RGB and resize and append to frames list
+        img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)).resize(output_size)
+        frames.append(img)
+        
+    cap.release()
+
+    # Stitch and save as an optimized looping WebP animation
+    if frames:
+        frames[0].save(output_path, save_all=True, append_images=frames[1::2], 
+                       duration=100, loop=0, optimize=True, colors=128)
+        print(f"\nSuccess! WebP animation saved to {output_path}.")
+
 if __name__ == "__main__":
     # Command-line interface to build index, load models, or run interactive search
     parser = argparse.ArgumentParser(description="Multimodal Video Retrieval Pipeline")
     parser.add_argument("--build", action="store_true", help="Flag to build the Faiss index from scratch.")
     parser.add_argument("--load-models", action="store_true", help="Flag to load models.")
     parser.add_argument("--query", action="store_true", help="The natural language search query.")
+    parser.add_argument("--webp", action="store_true", help="Flag to enable creating webp animatation files from search results.")
     parser.add_argument("--raw-dir", type=str, default="./data/raw_videos", help="Directory containing raw videos.")
     parser.add_argument("--frames-dir", type=str, default="./data/processed_frames", help="Directory containing extracted frames.")
     parser.add_argument("--index-path", type=str, default="./data/faiss_index.bin", help="Path to save/load the faiss index file.")
+    parser.add_argument("--webp-dir", type=str, default="./assets", help="Directory to save WebP animation files.")
     parser.add_argument("--top-k", type=int, default=10, help="Number of chunks to send to Stage 2.")
     parser.add_argument("--max-chunk-duration", type=float, default=10.0, help="Maximum duration of video chunks in seconds.")
     parser.add_argument("--overlap", type=float, default=2.0, help="Overlap duration in seconds between video chunks.")
@@ -230,9 +276,14 @@ if __name__ == "__main__":
                     continue
                 
                 # Run the search
-                run_search(query=user_query, embedder=embedder, vector_store=vector_store, 
-                           reranker=reranker, frames_dir=args.frames_dir, top_k=args.top_k, 
-                           reranking_fusion_alpha=args.reranking_fusion_alpha)
+                results = run_search(query=user_query, embedder=embedder, vector_store=vector_store, 
+                                     reranker=reranker, frames_dir=args.frames_dir, top_k=args.top_k, 
+                                     reranking_fusion_alpha=args.reranking_fusion_alpha)
+                
+                if args.webp:
+                    output_path = os.path.join(args.webp_dir, f"{user_query.replace(' ', '_')}.webp")
+                    export_search_to_webp(result=results[0], output_path=output_path, output_size=(270, 480),
+                                          video_extension="mp4", raw_videos_dir=args.raw_dir)
             except KeyboardInterrupt:
                 print("\nExiting search mode.")
                 break
