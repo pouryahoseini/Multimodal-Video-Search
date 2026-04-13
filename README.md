@@ -18,7 +18,7 @@ This system bypasses simple keyword matching by relying entirely on dense vector
 ### 2. Stage 2: High-Precision Generative Reranking (Qwen2-VL)
 * **The Concept:** Contrastive models (like SigLIP) are excellent at identifying objects but struggle with complex spatial relationships. Because `Qwen2-VL-7B-Instruct` processes video frames natively, it acts as a logical gatekeeper capable of understanding both spatial layout and temporal sequence.
 * **The Engineering:** Instead of prompting the VLM to generate a string of text (which is slow and hard to parse), we force it to output a single token ("Yes" or "No"). We extract the raw mathematical logits of the "Yes" token using PyTorch, convert it to a probability via softmax, and use it as a continuous scoring function.
-* **Score Fusion:** The final confidence score is a convex combination of the normalized Faiss inner-product (stage 1) and the VLM's logical probability (stage 2): $S_{final} = \alpha * S_{stage1} + (1 - \alpha) * S_{stage2}$.
+* **Score Fusion:** The final confidence score is a convex combination of the normalized Faiss inner-product (Stage 1) and the VLM's logical probability (Stage 2): $S_{final} = \alpha * S_{stage1} + (1 - \alpha) * S_{stage2}$.
 
 ### 3. Semantic Chunking & Timestamping
 * **The Concept:** Returning a 5-minute video for a 3-second action is a poor user experience.
@@ -121,7 +121,7 @@ The UI returns the top 5 ranking segments, dynamically rendering a video player 
 ## ⚠️ Known Limitations & Failure Modes
 
 * **Text-in-Image Hallucinations:** While SigLIP is highly robust, it can occasionally struggle with exact OCR. For example, searching for a specific brand logo might yield a visually similar logo of a different brand if the VLM reranker's confidence is not high enough to correct it.
-* **Complex Spatial Negation:** Queries involving negation (e.g., "A street with NO cars") often trip up contrastive models like SigLIP, as the embedding of the word "cars" forces the vector closer to images of cars. The Stage 2 Qwen2-VL reranker mitigates this, but an exceptionally high Stage 1 score can occasionally overpower the fusion equation.
+* **Complex Spatial Negation:** Queries involving negation (e.g., "A street with no cars") often trip up contrastive models like SigLIP, as the embedding of the word "cars" forces the vector closer to images of cars. The Stage 2 Qwen2-VL reranker mitigates this, but an exceptionally high Stage 1 score can occasionally overpower the fusion equation.
 
 ---
 
