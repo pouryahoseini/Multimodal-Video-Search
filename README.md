@@ -87,7 +87,7 @@ The system handles zero-shot, highly descriptive queries. Examples include:
 * "Vehicles on a highway at night"
 * "A Nike backpack"
 
-A few successful examples of top retrievals in a dataset of ~130 videos are shown below.
+A few examples of top retrievals in a dataset of ~130 videos are shown below. All the retrieved video segments, except the rightmost one, are successfully relevant to the queries shown below them. The incorrect retrieval shows an Adidas backpack, while the query was a Nike backpack.
 
 <table style="width: 100%; border-collapse: collapse;">
   <tr>
@@ -117,7 +117,8 @@ A few successful examples of top retrievals in a dataset of ~130 videos are show
     </td>
 </table>
 
-The UI returns the top 5 ranking segments, dynamically rendering a video player clipped to the exact `start_sec` and `end_sec` of the identified action.
+The UI returns the top 5 ranking segments, dynamically rendering a video player clipped to the exact `start_sec` and `end_sec` of the identified action. A screenshot the UI web app is shown below.
+<img width="20%" alt="Webapp screenshot" src="https://github.com/user-attachments/assets/070822aa-eea8-4398-afa0-8c18473cf406" />
 
 ---
 
