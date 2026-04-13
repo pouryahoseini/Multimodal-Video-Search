@@ -90,30 +90,30 @@ The system handles zero-shot, highly descriptive queries. Examples include:
 A few successful examples of top retrievals in a dataset of ~130 videos are shown below.
 
 <p align="center">
-  <figure style="display:inline-block; margin:10px;">
+  <div align="center" style="display:inline-block; margin:10px;">
     <img src="https://github.com/user-attachments/assets/d93be5d3-7809-419b-a85c-b00a7567d492" width="29%" alt="riding on a street">
-    <figcaption style="text-align:center;">riding on a street</figcaption>
-  </figure>
+    <p style="text-align:center; margin-top:4px;">riding on a street</p>
+  </div>
 
-  <figure style="display:inline-block; margin:10px;">
+  <div align="center" style="display:inline-block; margin:10px;">
     <img src="https://github.com/user-attachments/assets/ecea60fb-d1af-4178-ada9-27adf59718fd" width="29%" alt="shovel">
-    <figcaption style="text-align:center;">shovel</figcaption>
-  </figure>
+    <p style="text-align:center; margin-top:4px;">shovel</p>
+  </div>
 
-  <figure style="display:inline-block; margin:10px;">
+  <div align="center" style="display:inline-block; margin:10px;">
     <img src="https://github.com/user-attachments/assets/9860e8ee-39cf-4fbe-a8ba-7eb43c01f34b" width="29%" alt="wine salute">
-    <figcaption style="text-align:center;">wine salute</figcaption>
-  </figure>
+    <p style="text-align:center; margin-top:4px;">wine salute</p>
+  </div>
 
-  <figure style="display:inline-block; margin:10px;">
+  <div align="center" style="display:inline-block; margin:10px;">
     <img src="https://github.com/user-attachments/assets/126285c9-421d-40bc-8d1a-c2ad2ef74277" width="29%" alt="hockey goalie">
-    <figcaption style="text-align:center;">hockey goalie</figcaption>
-  </figure>
+    <p style="text-align:center; margin-top:4px;">hockey goalie</p>
+  </div>
 
-  <figure style="display:inline-block; margin:10px;">
+  <div align="center" style="display:inline-block; margin:10px;">
     <img src="https://github.com/user-attachments/assets/31914be5-bf4e-452d-9cd8-35e0cc211d54" width="29%" alt="a person is playing the piano">
-    <figcaption style="text-align:center;">a person is playing the piano</figcaption>
-  </figure>
+    <p style="text-align:center; margin-top:4px;">a person is playing the piano</p>
+  </div>
 </p>
 
 The UI returns the top 5 ranking segments, dynamically rendering a video player clipped to the exact `start_sec` and `end_sec` of the identified action.
