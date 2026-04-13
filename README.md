@@ -112,7 +112,7 @@ The system handles zero-shot, highly descriptive queries. A few examples of top 
     </td>
 </table>
 
-The UI returns the top 5 ranking segments, dynamically rendering a video player clipped to the exact `start_sec` and `end_sec` of the identified action. A screenshot the UI web app is shown below.
+The UI returns the top 5 ranking segments, dynamically rendering a video player clipped to the exact `start_sec` and `end_sec` of the identified action. A screenshot of the UI web app is shown below.
 
 <img width="30%" alt="Webapp screenshot" src="https://github.com/user-attachments/assets/070822aa-eea8-4398-afa0-8c18473cf406" />
 
