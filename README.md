@@ -82,12 +82,7 @@ Run the search engine directly in your terminal for fast, text-based interactive
 
 ## 🔍 Retrieval Examples
 
-The system handles zero-shot, highly descriptive queries. Examples include:
-* "Indoor scenes with laptops and coffee"
-* "Vehicles on a highway at night"
-* "A Nike backpack"
-
-A few examples of top retrievals in a dataset of ~130 videos are shown below. All the retrieved video segments, except the rightmost one, are successfully relevant to the queries shown below them. The incorrect retrieval shows an Adidas backpack, while the query was a Nike backpack.
+The system handles zero-shot, highly descriptive queries. A few examples of top retrievals in a dataset of ~130 videos are shown below. All the retrieved video segments, except the rightmost one, are successfully relevant to the queries shown below them. The incorrect retrieval shows an Adidas backpack, while the query was a Nike backpack.
 
 <table style="width: 100%; border-collapse: collapse;">
   <tr>
