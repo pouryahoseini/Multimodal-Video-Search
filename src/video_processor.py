@@ -1,8 +1,14 @@
 import os
+import sys
 import cv2
 import json
 from tqdm import tqdm
 from scenedetect import detect, ContentDetector
+
+# Modify the path to find the config file whether run directly or imported
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import raw_videos_dir, processed_frames_dir, max_chunk_duration, \
+    chunk_overlap, scene_content_threshold, fps
 
 class VideoProcessor:
     def __init__(self, raw_dir: str, output_dir: str, max_chunk_duration: float = 15.0, overlap: float = 2.0,
@@ -168,11 +174,11 @@ class VideoProcessor:
 if __name__ == "__main__":
     # Execute the video processing pipeline
     processor = VideoProcessor(
-        raw_dir="./data/raw_videos", 
-        output_dir="./data/processed_frames",
-        max_chunk_duration=15.0,
-        overlap=2.0,
-        content_threshold=27.0,
-        fps=1.0
+        raw_dir=raw_videos_dir, 
+        output_dir=processed_frames_dir,
+        max_chunk_duration=max_chunk_duration,
+        overlap=chunk_overlap,
+        content_threshold=scene_content_threshold,
+        fps=fps
     )
     processor.process_all()

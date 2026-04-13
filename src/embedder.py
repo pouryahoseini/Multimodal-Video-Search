@@ -1,4 +1,5 @@
 import os
+import sys
 import torch
 import numpy as np
 from PIL import Image
@@ -6,6 +7,9 @@ from typing import List, Dict, Union, Optional
 from transformers import AutoProcessor, AutoModel
 import torch.nn.functional as F
 from tqdm import tqdm
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import processed_frames_dir, embedding_model_name
 
 class MultimodalEmbedder:
     def __init__(self, model_name: str = "google/siglip-base-patch16-224", device: Optional[str] = None):
@@ -135,9 +139,8 @@ class MultimodalEmbedder:
 
 if __name__ == "__main__":
     # Example execution
-    processed_frames_dir = "./data/processed_frames"
     embedder = MultimodalEmbedder(
-        model_name="google/siglip-base-patch16-224"
+        model_name=embedding_model_name
     )
     
     print(f"Processing directory: {processed_frames_dir}")
