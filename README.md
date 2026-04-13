@@ -103,8 +103,6 @@ A few successful examples of top retrievals in a dataset of ~130 videos are show
       <img src="https://github.com/user-attachments/assets/9860e8ee-39cf-4fbe-a8ba-7eb43c01f34b" width="100%" alt="wine salute">
       <br>wine salute
     </td>
-  </tr>
-  <tr>
     <td align="center" style="width: 20%; vertical-align: top;">
       <img src="https://github.com/user-attachments/assets/126285c9-421d-40bc-8d1a-c2ad2ef74277" width="100%" alt="hockey goalie">
       <br>hockey goalie
