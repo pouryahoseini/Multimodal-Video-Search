@@ -118,6 +118,7 @@ A few examples of top retrievals in a dataset of ~130 videos are shown below. Al
 </table>
 
 The UI returns the top 5 ranking segments, dynamically rendering a video player clipped to the exact `start_sec` and `end_sec` of the identified action. A screenshot the UI web app is shown below.
+
 <img width="20%" alt="Webapp screenshot" src="https://github.com/user-attachments/assets/070822aa-eea8-4398-afa0-8c18473cf406" />
 
 ---
