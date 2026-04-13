@@ -91,25 +91,25 @@ A few successful examples of top retrievals in a dataset of ~130 videos are show
 
 <table style="width: 100%; border-collapse: collapse;">
   <tr>
-    <td align="center" style="width: 33%; vertical-align: top;">
+    <td align="center" style="width: 20%; vertical-align: top;">
       <img src="https://github.com/user-attachments/assets/d93be5d3-7809-419b-a85c-b00a7567d492" width="100%" alt="riding on a street">
       <br>riding on a street
     </td>
-    <td align="center" style="width: 33%; vertical-align: top;">
+    <td align="center" style="width: 20%; vertical-align: top;">
       <img src="https://github.com/user-attachments/assets/ecea60fb-d1af-4178-ada9-27adf59718fd" width="100%" alt="shovel">
       <br>shovel
     </td>
-    <td align="center" style="width: 33%; vertical-align: top;">
+    <td align="center" style="width: 20%; vertical-align: top;">
       <img src="https://github.com/user-attachments/assets/9860e8ee-39cf-4fbe-a8ba-7eb43c01f34b" width="100%" alt="wine salute">
       <br>wine salute
     </td>
   </tr>
   <tr>
-    <td align="center" style="width: 33%; vertical-align: top;">
+    <td align="center" style="width: 20%; vertical-align: top;">
       <img src="https://github.com/user-attachments/assets/126285c9-421d-40bc-8d1a-c2ad2ef74277" width="100%" alt="hockey goalie">
       <br>hockey goalie
     </td>
-    <td align="center" style="width: 33%; vertical-align: top;">
+    <td align="center" style="width: 20%; vertical-align: top;">
       <img src="https://github.com/user-attachments/assets/31914be5-bf4e-452d-9cd8-35e0cc211d54" width="100%" alt="a person is playing the piano">
       <br>a person is playing the piano
     </td>
