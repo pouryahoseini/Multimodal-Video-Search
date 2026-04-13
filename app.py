@@ -1,5 +1,7 @@
 import os
 import warnings
+from config import raw_videos_dir, video_file_extension, output_webp_size, \
+webp_save_dir, processed_frames_dir, faiss_index_path, top_k, reranking_fusion_alpha
 
 # Suppress warnings from transformers library to keep the output clean
 os.environ["TRANSFORMERS_VERBOSITY"] = "error"
@@ -7,18 +9,6 @@ warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
 
 import streamlit as st
 from main import load_search_models, run_search, export_search_to_webp
-
-# Configs
-raw_videos_dir = "./data/raw_videos"
-video_file_extension = "mp4"
-output_webp_size = (270, 480)  # Size for the exported WebP animations
-webp_save_dir = "./assets"
-processed_frames_dir = "./data/processed_frames"
-faiss_index_path = "./data/faiss_index.bin"
-# Number of top results to return from the search
-top_k = 5
-# Weight of the original visual retrieval score in the final fusion (0.0 = only VLM score, 1.0 = only original score)
-reranking_fusion_alpha = 0.3 
 
 # Page Config
 st.set_page_config(page_title="Semantic Video Search Engine", layout="wide")

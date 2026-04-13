@@ -7,6 +7,10 @@ from src.video_processor import VideoProcessor
 from src.embedder import MultimodalEmbedder
 from src.vector_store import VectorStore
 from src.reranker import Reranker
+from config import raw_videos_dir, processed_frames_dir, faiss_index_path, top_k, reranking_fusion_alpha, \
+    fps, max_chunk_duration, chunk_overlap, scene_content_threshold, output_webp_size, webp_save_dir, \
+    embedding_model_name, vlm_model_name, video_file_extension
+
 
 def build_index(raw_dir: str, frames_dir: str, index_path: str, max_chunk_duration: float = 15.0, 
                 overlap: float = 2.0, content_threshold: float = 27.0, fps : float = 1.0, 
@@ -195,18 +199,18 @@ if __name__ == "__main__":
     parser.add_argument("--load-models", action="store_true", help="Flag to load models.")
     parser.add_argument("--query", action="store_true", help="The natural language search query.")
     parser.add_argument("--webp", action="store_true", help="Flag to enable creating webp animatation files from search results.")
-    parser.add_argument("--raw-dir", type=str, default="./data/raw_videos", help="Directory containing raw videos.")
-    parser.add_argument("--frames-dir", type=str, default="./data/processed_frames", help="Directory containing extracted frames.")
-    parser.add_argument("--index-path", type=str, default="./data/faiss_index.bin", help="Path to save/load the faiss index file.")
-    parser.add_argument("--webp-dir", type=str, default="./assets", help="Directory to save WebP animation files.")
-    parser.add_argument("--top-k", type=int, default=10, help="Number of chunks to send to Stage 2.")
-    parser.add_argument("--max-chunk-duration", type=float, default=10.0, help="Maximum duration of video chunks in seconds.")
-    parser.add_argument("--overlap", type=float, default=2.0, help="Overlap duration in seconds between video chunks.")
-    parser.add_argument("--content-threshold", type=float, default=27.0, help="PySceneDetect content detection threshold.")
-    parser.add_argument("--fps", type=float, default=1.0, help="Frames per second to extract from videos for embedding.")
-    parser.add_argument("--reranking-fusion-alpha", type=float, default=0.3, help="Weight for stage 1 retrieval score in final fusion.")
-    parser.add_argument("--embedding-model-name", type=str, default="google/siglip-base-patch16-224", help="The multimodal embedding model.")
-    parser.add_argument("--vlm-model-name", type=str, default="Qwen/Qwen2-VL-7B-Instruct", help="The VLM model for reranking.")
+    parser.add_argument("--raw-dir", type=str, default=raw_videos_dir, help="Directory containing raw videos.")
+    parser.add_argument("--frames-dir", type=str, default=processed_frames_dir, help="Directory containing extracted frames.")
+    parser.add_argument("--index-path", type=str, default=faiss_index_path, help="Path to save/load the faiss index file.")
+    parser.add_argument("--webp-dir", type=str, default=webp_save_dir, help="Directory to save WebP animation files.")
+    parser.add_argument("--top-k", type=int, default=top_k, help="Number of chunks to send to Stage 2.")
+    parser.add_argument("--max-chunk-duration", type=float, default=max_chunk_duration, help="Maximum duration of video chunks in seconds.")
+    parser.add_argument("--overlap", type=float, default=chunk_overlap, help="Overlap duration in seconds between video chunks.")
+    parser.add_argument("--content-threshold", type=float, default=scene_content_threshold, help="PySceneDetect content detection threshold.")
+    parser.add_argument("--fps", type=float, default=fps, help="Frames per second to extract from videos for embedding.")
+    parser.add_argument("--reranking-fusion-alpha", type=float, default=reranking_fusion_alpha, help="Weight for stage 1 retrieval score in final fusion.")
+    parser.add_argument("--embedding-model-name", type=str, default=embedding_model_name, help="The multimodal embedding model.")
+    parser.add_argument("--vlm-model-name", type=str, default=vlm_model_name, help="The VLM model for reranking.")
     
     args = parser.parse_args()
 
@@ -281,9 +285,9 @@ if __name__ == "__main__":
                                      reranking_fusion_alpha=args.reranking_fusion_alpha)
                 
                 if args.webp:
-                    output_path = os.path.join(args.webp_dir, f"{user_query.replace(' ', '_')}.webp")
-                    export_search_to_webp(result=results[0], output_path=output_path, output_size=(270, 480),
-                                          video_extension="mp4", raw_videos_dir=args.raw_dir)
+                    output_path = os.path.join(args.webp_dir, f"{user_query.replace(' ', '_')}_rank1.webp")
+                    export_search_to_webp(result=results[0], output_path=output_path, output_size=output_webp_size,
+                                          video_extension=video_file_extension, raw_videos_dir=args.raw_dir)
             except KeyboardInterrupt:
                 print("\nExiting search mode.")
                 break
