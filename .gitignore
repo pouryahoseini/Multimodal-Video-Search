@@ -13,6 +13,9 @@ data/processed_frames/*
 data/faiss_index.bin
 data/faiss_index.bin.map.json
 
+# Ignore generated webp images
+*.webp
+
 # ==========================================
 # Python & Environments
 # ==========================================
