@@ -96,11 +96,6 @@ A few successful examples of top retrievals in a dataset of ~130 videos are show
   </figure>
 
   <figure style="display:inline-block; margin:10px;">
-    <img src="https://github.com/user-attachments/assets/0cc8082c-4783-43ad-824c-94944c83f47" width="29%" alt="Mongolian steppe">
-    <figcaption style="text-align:center;">Mongolian steppe</figcaption>
-  </figure>
-
-  <figure style="display:inline-block; margin:10px;">
     <img src="https://github.com/user-attachments/assets/ecea60fb-d1af-4178-ada9-27adf59718fd" width="29%" alt="shovel">
     <figcaption style="text-align:center;">shovel</figcaption>
   </figure>
