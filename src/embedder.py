@@ -29,8 +29,22 @@ class MultimodalEmbedder:
         self.model = AutoModel.from_pretrained(model_name).to(self.device)
         self.model.eval()
 
+        # Derive max text token length from the model's own text config
+        text_cfg = getattr(self.model.config, "text_config", None)
+        self.max_text_tokens = getattr(text_cfg, "max_position_embeddings", 77)
+
         # Save the embedding size
-        self.embedding_size = self.model.config.text_config.hidden_size
+        # Perform a dummy forward pass to determine embedding size across different models
+        dummy_inputs = self.processor(text=["dummy"], padding="max_length", return_tensors="pt", max_length=16, truncation=True).to(self.device)
+        dummy_out = self.model.get_text_features(**dummy_inputs)
+        if hasattr(dummy_out, "pooler_output"):
+            self.embedding_size = dummy_out.pooler_output.shape[-1]
+        elif hasattr(dummy_out, "text_embeds"):
+            self.embedding_size = dummy_out.text_embeds.shape[-1]
+        elif isinstance(dummy_out, torch.Tensor):
+            self.embedding_size = dummy_out.shape[-1]
+        else:
+            self.embedding_size = text_cfg.hidden_size
 
     @torch.no_grad()
     def embed_text(self, query: str) -> np.ndarray:
@@ -45,8 +59,17 @@ class MultimodalEmbedder:
         """
 
         # Tokenize the input text, then pass through the model to get text features
-        inputs = self.processor(text=[query], padding="max_length", return_tensors="pt").to(self.device)
-        text_features = self.model.get_text_features(**inputs).pooler_output
+        inputs = self.processor(text=[query], padding="max_length", return_tensors="pt", max_length=self.max_text_tokens, truncation=True).to(self.device)
+        text_features_out = self.model.get_text_features(**inputs)
+        
+        if hasattr(text_features_out, "pooler_output"):
+            text_features = text_features_out.pooler_output
+        elif hasattr(text_features_out, "text_embeds"):
+            text_features = text_features_out.text_embeds
+        elif isinstance(text_features_out, torch.Tensor):
+            text_features = text_features_out
+        else:
+            text_features = text_features_out
 
         # L2 normalize so that inner product equals cosine similarity
         text_features = F.normalize(text_features, p=2, dim=-1)
@@ -78,7 +101,16 @@ class MultimodalEmbedder:
             
             # Process the batch of images through the model to get image features
             inputs = self.processor(images=images, return_tensors="pt").to(self.device)
-            image_features = self.model.get_image_features(**inputs).pooler_output
+            image_features_out = self.model.get_image_features(**inputs)
+            
+            if hasattr(image_features_out, "pooler_output"):
+                image_features = image_features_out.pooler_output
+            elif hasattr(image_features_out, "image_embeds"):
+                image_features = image_features_out.image_embeds
+            elif isinstance(image_features_out, torch.Tensor):
+                image_features = image_features_out
+            else:
+                image_features = image_features_out
 
             # L2 normalize and append to the list of all embeddings
             image_features = F.normalize(image_features, p=2, dim=-1)
