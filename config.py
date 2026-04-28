@@ -13,6 +13,7 @@ scene_content_threshold = 27.0
 
 # Model names
 embedding_model_name = "google/siglip-base-patch16-224"
+# embedding_model_name = "openai/clip-vit-base-patch32"
 vlm_model_name = "Qwen/Qwen2-VL-7B-Instruct"
 
 # Paths
