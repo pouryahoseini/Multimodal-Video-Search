@@ -1,7 +1,8 @@
 import os
 import warnings
 from config import raw_videos_dir, video_file_extension, output_webp_size, \
-webp_save_dir, processed_frames_dir, faiss_index_path, top_k, reranking_fusion_alpha
+webp_save_dir, processed_frames_dir, faiss_index_path, top_k, reranking_fusion_alpha, \
+embedding_model_name, vlm_model_name
 
 # Suppress warnings from transformers library to keep the output clean
 os.environ["TRANSFORMERS_VERBOSITY"] = "error"
@@ -38,8 +39,8 @@ def load_backend(processed_frames_dir, faiss_index_path):
     embedder, vector_store, reranker = load_search_models(frames_dir=processed_frames_dir, 
                                                           index_path=faiss_index_path,
                                                           fps=1.0,
-                                                          embedding_model_name="google/siglip-base-patch16-224",
-                                                          vlm_model_name="Qwen/Qwen2-VL-7B-Instruct"
+                                                          embedding_model_name=embedding_model_name,
+                                                          vlm_model_name=vlm_model_name
                                                           )
 
     return embedder, vector_store, reranker
